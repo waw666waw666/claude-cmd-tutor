@@ -27,8 +27,8 @@ export default function Reference() {
             <h2 className="text-xs font-medium text-[var(--color-text-dimmer)] uppercase tracking-wider mb-2">
               {label}
             </h2>
-            <div className="rounded-xl border border-[var(--color-border)] overflow-hidden">
-              <table className="w-full text-sm">
+            <div className="rounded-xl border border-[var(--color-border)] overflow-x-auto">
+              <table className="w-full text-sm min-w-[400px]">
                 <thead>
                   <tr className="bg-[var(--color-bg-elevated)]">
                     <th className="text-left px-4 py-2.5 font-medium text-xs text-[var(--color-text-dim)] w-[140px]">命令</th>

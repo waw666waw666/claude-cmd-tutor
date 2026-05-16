@@ -19,9 +19,10 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [selIdx, setSelIdx] = useState(0)
-  const [terminalHeight, setTerminalHeight] = useState(240)
+  const pendingFill = useRef(false)
+  const [terminalHeight, setTerminalHeight] = useState(200)
   const [isResizing, setIsResizing] = useState(false)
-  const terminalHeightRef = useRef(240)
+  const terminalHeightRef = useRef(200)
   const inputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const terminalRef = useRef<HTMLDivElement>(null)
@@ -42,7 +43,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
     if (!showHints || !input.startsWith('/')) return []
     const q = input.toLowerCase()
     const all = commands.map(c => c.name)
-    return all.filter(c => c.toLowerCase().includes(q)).slice(0, 8)
+    return all.filter(c => c.toLowerCase().includes(q))
   }, [input, showHints])
 
   useEffect(() => {
@@ -246,31 +247,59 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
     if (suggestions.length > 0) {
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        const next = Math.min(selIdx + 1, suggestions.length - 1)
-        setSelIdx(next)
-        setInput(suggestions[next])
+        if (selIdx < suggestions.length - 1) {
+          setSelIdx(selIdx + 1)
+        } else if (historyIndex >= 0) {
+          pendingFill.current = false
+          const newIndex = historyIndex + 1
+          if (newIndex >= history.length) {
+            setHistoryIndex(-1)
+            setInput('')
+          } else {
+            setHistoryIndex(newIndex)
+            setInput(history[newIndex])
+          }
+        }
         return
       }
       if (e.key === 'ArrowUp') {
         e.preventDefault()
-        const prev = Math.max(selIdx - 1, 0)
-        setSelIdx(prev)
-        setInput(suggestions[prev])
+        if (selIdx > 0) {
+          setSelIdx(selIdx - 1)
+        } else if (history.length > 0) {
+          pendingFill.current = false
+          const newIndex = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1)
+          setHistoryIndex(newIndex)
+          setInput(history[newIndex])
+        }
         return
       }
       if (e.key === 'Enter') {
         e.preventDefault()
-        selectSuggestion(suggestions[selIdx])
+        if (pendingFill.current) {
+          pendingFill.current = false
+          handleSimulateCommand(suggestions[selIdx])
+          setHistory(prev => [...prev, suggestions[selIdx]])
+          setHistoryIndex(-1)
+          setInput('')
+        } else {
+          pendingFill.current = true
+          setInput(suggestions[selIdx])
+        }
+        setSelIdx(0)
         return
       }
       if (e.key === 'Tab') {
         e.preventDefault()
-        selectSuggestion(suggestions[selIdx])
+        pendingFill.current = true
+        setInput(suggestions[selIdx])
+        setSelIdx(0)
         return
       }
       if (e.key === 'Escape') {
         e.preventDefault()
         setInput('')
+        pendingFill.current = false
         return
       }
     }
@@ -305,10 +334,11 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
     }
   }
 
-  const handleResizeStart = (e: MouseEvent) => {
+  const handleResizeStart = (e: MouseEvent | React.TouchEvent) => {
     e.preventDefault()
     setIsResizing(true)
-    resizeStartY.current = e.clientY
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    resizeStartY.current = clientY
     resizeStartHeight.current = terminalHeight
   }
 
@@ -320,7 +350,14 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       setTerminalHeight(newHeight)
       terminalHeightRef.current = newHeight
     }
-    const handleMouseUp = () => {
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isResizing) return
+      const delta = resizeStartY.current - e.touches[0].clientY
+      const newHeight = Math.min(Math.max(120, resizeStartHeight.current + delta), 500)
+      setTerminalHeight(newHeight)
+      terminalHeightRef.current = newHeight
+    }
+    const handleEnd = () => {
       setIsResizing(false)
       if (terminalHeightRef.current <= 140) {
         onClose?.()
@@ -329,11 +366,15 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
 
     if (isResizing) {
       document.addEventListener('mousemove', handleMouseMove as unknown as EventListener)
-      document.addEventListener('mouseup', handleMouseUp)
+      document.addEventListener('mouseup', handleEnd)
+      document.addEventListener('touchmove', handleTouchMove as unknown as EventListener, { passive: false })
+      document.addEventListener('touchend', handleEnd)
     }
     return () => {
       document.removeEventListener('mousemove', handleMouseMove as unknown as EventListener)
-      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('mouseup', handleEnd)
+      document.removeEventListener('touchmove', handleTouchMove as unknown as EventListener)
+      document.removeEventListener('touchend', handleEnd)
     }
   }, [isResizing])
 
@@ -342,10 +383,11 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       ref={terminalRef}
       className={`border-t border-[var(--color-terminal-border)] bg-[var(--color-bg-terminal)] transition-all relative ${isResizing ? 'select-none' : ''}`}
     >
-      <div
-        className="h-1 cursor-ns-resize opacity-0 hover:opacity-50 hover:bg-[var(--color-accent)]/20 transition-opacity"
-        onMouseDown={handleResizeStart}
-      />
+        <div
+          className="h-1.5 cursor-ns-resize opacity-0 hover:opacity-50 hover:bg-[var(--color-accent)]/20 active:opacity-50 active:bg-[var(--color-accent)]/20 transition-opacity"
+          onMouseDown={handleResizeStart}
+          onTouchStart={handleResizeStart}
+        />
 
       <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--color-terminal-border)]">
           <div className="flex items-center gap-2">
@@ -417,7 +459,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       </div>
 
       {showHints && suggestions.length > 0 && (
-        <div ref={suggestionRef} className="mx-3 mb-2 max-h-32 overflow-y-auto rounded-lg border border-[var(--color-terminal-border)] bg-[var(--color-terminal-suggestion)] shadow-lg">
+        <div ref={suggestionRef} className="mx-3 mb-2 max-h-64 overflow-y-auto rounded-lg border border-[var(--color-terminal-border)] bg-[var(--color-terminal-suggestion)] shadow-lg">
           {suggestions.map((name, i) => (
             <button
               key={name}
@@ -455,7 +497,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
           ref={inputRef}
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => { setInput(e.target.value); pendingFill.current = false }}
           onKeyDown={handleKeyDown}
           placeholder={
             practiceState?.mode === 'practice'

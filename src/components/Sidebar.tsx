@@ -9,6 +9,7 @@ interface SidebarProps {
   onToggleTheme: () => void
   autoNext: boolean
   onToggleAutoNext: () => void
+  onNavClick?: () => void
 }
 
 const logoIcon = (
@@ -30,7 +31,7 @@ const MIN_WIDTH = 64
 const MAX_WIDTH = 280
 const COLLAPSE_THRESHOLD = 100
 
-export default function Sidebar({ showHints, onToggleHints, isDark, onToggleTheme, autoNext, onToggleAutoNext }: SidebarProps) {
+export default function Sidebar({ showHints, onToggleHints, isDark, onToggleTheme, autoNext, onToggleAutoNext, onNavClick }: SidebarProps) {
   const [width, setWidth] = useState(224)
   const [isResizing, setIsResizing] = useState(false)
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
@@ -111,6 +112,7 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
           <NavLink
             key={to}
             to={to}
+            onClick={onNavClick}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 text-sm transition-colors duration-150 min-h-[40px] ${
                 collapsed ? 'justify-center' : ''

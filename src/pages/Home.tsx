@@ -40,7 +40,7 @@ export default function Home() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md hover:scale-[1.02]">
           <div className="text-2xl font-bold text-[var(--color-accent)]">{completedCount}/{totalCount}</div>
           <div className="text-xs text-[var(--color-text-dimmer)] mt-1">已掌握命令</div>
@@ -80,7 +80,7 @@ export default function Home() {
           />
         </div>
         <div className="mt-3 flex gap-2 flex-wrap">
-          {commands.slice(0, 8).map((cmd) => (
+          {commands.slice(0, 6).map((cmd) => (
             <span
               key={cmd.id}
               className={`px-2 py-0.5 rounded text-xs font-mono transition-colors cursor-pointer hover:opacity-80 ${
@@ -93,16 +93,16 @@ export default function Home() {
               {commandProgress[cmd.id]?.completed ? '✓ ' : ''}{cmd.name}
             </span>
           ))}
-          {commands.length > 8 && (
+          {commands.length > 6 && (
             <span className="px-2 py-0.5 rounded text-xs text-[var(--color-text-dimmer)]">
-              +{commands.length - 8} more
+              +{commands.length - 6} more
             </span>
           )}
         </div>
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {quickLinks.map(({ to, icon: Icon, label, desc, color }) => (
           <button
             key={to}

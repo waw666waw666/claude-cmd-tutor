@@ -1,58 +1,59 @@
 # Claude Code 命令训练营
 
-从零开始，循序渐进地学习 Claude Code 所有命令。交互式命令行学习平台。
+> 🚀 **互动式命令行学习平台** — 从零上手 Claude Code，一站式学会全部 118 个命令
 
-## Tech Stack
+[![Live Site](https://img.shields.io/badge/在线体验-claudelearn.top-7c3aed?style=flat&logo=cloudflare)](https://claudelearn.top)
+![Tech Stack](https://img.shields.io/badge/Stack-Vite_8_·_React_19_·_TypeScript_6_·_Tailwind_v4-3178c6?style=flat)
 
-- Vite 8 + React 19 + TypeScript
-- Tailwind CSS v4
-- React Router v7
-- Zustand (state management + localStorage)
-- Lucide React (icons)
-- Framer Motion (animations)
+---
 
-## Quick Start
+## 为什么需要这个项目？
+
+Claude Code 是强大的命令行 AI 编程助手，但 **118 个命令** 从基础会话管理到高级 agent 编排，学习曲线陡峭。官方文档只有静态列表，缺乏交互式练习环境。
+
+**CC 训练营** 解决了这个问题：
+
+- 🎮 **交互式终端** — 边学边练，真实命令行体验
+- 🧠 **情景挑战** — 10+ 真实开发场景模拟
+- 🏆 **成就系统** — 游戏化学习，7 天打卡激励
+- 📖 **双模式查阅** — 分类浏览 + 速查表格
+
+## 功能一览
+
+| 模块 | 说明 |
+|------|------|
+| **📚 命令大全** | 118 个命令按 6 大分类展开，支持搜索、难度标记、进度追踪 |
+| **⌨️ 交互练习** | 内置模拟终端，选择命令→输入验证→即时反馈循环 |
+| **⚔️ 情景挑战** | 10+ 个贴近真实开发的场景任务，覆盖日常到高级运维 |
+| **📋 速查手册** | 全量表格速览，适合回顾和快速定位 |
+| **🏅 成就进度** | 9 个徽章成就 + 学习统计 + 连续打卡追踪 |
+
+## 快速上手
 
 ```bash
 npm install
-npm run dev     # http://localhost:5173
-npm run build   # Production build
-npm run preview # Preview production build
+npm run dev      # http://localhost:5173
+npm run build    # 生产构建
 ```
 
-## Project Structure
+## 技术栈
 
-```
-src/
-├── types/index.ts          # Type definitions
-├── data/{commands,scenarios,achievements}.ts
-├── store/useProgress.ts    # Zustand store
-├── components/
-│   ├── Layout.tsx          # Main layout (sidebar + content + terminal)
-│   ├── Sidebar.tsx         # Collapsible nav with drag-to-resize
-│   ├── Terminal.tsx        # Interactive terminal emulator
-│   └── AchievementBadge.tsx
-├── pages/
-│   ├── Home.tsx            # Dashboard with stats
-│   ├── Commands.tsx        # Command encyclopedia
-│   ├── CommandDetail.tsx   # Command detail view
-│   ├── Practice.tsx        # Interactive practice mode
-│   ├── Scenarios.tsx       # Challenge scenarios
-│   ├── Reference.tsx       # Quick reference table
-│   └── Progress.tsx        # Achievements & progress
-├── App.tsx                 # Router
-└── main.tsx                # Entry point
-```
+| 层 | 技术 |
+|----|------|
+| 框架 | Vite 8 + React 19 + TypeScript 6 |
+| 样式 | Tailwind CSS v4 + 暗色模式变量 |
+| 路由 | React Router v7 (8 路由) |
+| 状态 | Zustand + localStorage 持久化 |
+| 动画 | Framer Motion |
+| 图标 | Lucide React |
+| 部署 | Cloudflare Pages |
 
-## Features
+## 在线体验
 
-- 6 大类 20+ 命令的交互学习
-- 情景挑战（6 个实战场景）
-- 成就系统（9 个徽章）
-- 亮色/暗色双主题
-- 拖动调整侧边栏宽度
-- 学习进度持久化
+👉 **[claudelearn.top](https://claudelearn.top)** — 立即开始学习
 
-## Dev Server
+无需安装，浏览器打开即用，支持亮色/暗色主题。
 
-Dev server runs on port **5173** by default (configured in `vite.config.ts`).
+## License
+
+MIT
