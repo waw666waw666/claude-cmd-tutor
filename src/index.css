@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* ========== Light Theme (Default) ========== */
+:root {
+  --color-bg-page: #f5f4ed;
+  --color-bg-card: #faf9f5;
+  --color-bg-elevated: #f0eee6;
+  --color-bg-nav: rgba(245, 244, 237, 0.92);
+  --color-bg-hover: rgba(0, 0, 0, 0.04);
+  --color-bg-terminal: #f0eee6;
+  --color-border: #e4e1d8;
+  --color-text: #141413;
+  --color-text-secondary: #5e5d59;
+  --color-text-dim: #87867f;
+  --color-text-dimmer: #6b6965;
+  --color-terracotta: #c96442;
+  --color-coral: #d97757;
+  --color-accent: #c96442;
+  --color-accent-dim: #a84d32;
+  --color-text-on-accent: #faf9f5;
+  --color-green: #4a7c59;
+  --color-orange: #c96442;
+  --color-red: #b94a3a;
+  --color-purple: #7c5cbf;
+  --color-difficulty-easy: #16a34a;
+  --color-difficulty-medium: #ea580c;
+  --color-difficulty-hard: #dc2626;
+  /* Terminal Colors - Light Theme */
+  --color-terminal-accent: #c96442;
+  --color-terminal-success: #4a7c59;
+  --color-terminal-error: #b94a3a;
+  --color-terminal-system: #b8860b;
+  --color-terminal-output: #6b6965;
+  --color-terminal-input: #141413;
+  --color-terminal-placeholder: #87867f;
+  --color-terminal-border: #ddd9ce;
+  --color-terminal-suggestion: #faf9f5;
+  --color-terminal-suggestion-active: rgba(201,100,66,0.12);
+  /* Glow/overlay colors */
+  --color-accent-glow: rgba(201, 100, 66, 0.08);
+  --color-accent-shadow: rgba(201, 100, 66, 0.15);
+  --color-accent-border: rgba(201, 100, 66, 0.6);
+  --color-green-glow: rgba(74, 124, 89, 0.15);
+}
+
+/* ========== Dark Theme (Claude Design System) ========== */
+.dark {
+  --color-bg-page: #141413;
+  --color-bg-card: #232322;
+  --color-bg-elevated: #2f2f2d;
+  --color-bg-nav: rgba(20, 20, 19, 0.92);
+  --color-bg-hover: rgba(255, 255, 255, 0.06);
+  --color-bg-terminal: #1a1a19;
+  --color-border: #3a3a37;
+  --color-text: #faf9f5;
+  --color-text-secondary: #b0aea5;
+  --color-text-dim: #87867f;
+  --color-text-dimmer: #6a6a64;
+  --color-terracotta: #d97757;
+  --color-coral: #e8917a;
+  --color-accent: #d97757;
+  --color-accent-dim: #c96442;
+  --color-green: #6b9b7a;
+  --color-orange: #d97757;
+  --color-red: #e07a6b;
+  --color-purple: #9b7ed9;
+  --color-difficulty-easy: #6b9b7a;
+  --color-difficulty-medium: #d97757;
+  --color-difficulty-hard: #e07a6b;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  /* Terminal Colors - Dark Theme */
+  --color-terminal-accent: #d97757;
+  --color-terminal-success: #6b9b7a;
+  --color-terminal-error: #e07a6b;
+  --color-terminal-system: #e8a040;
+  --color-terminal-output: #b0aea5;
+  --color-terminal-input: #faf9f5;
+  --color-terminal-placeholder: #87867f;
+  --color-terminal-border: #2d2d2b;
+  --color-terminal-suggestion: #1d1d1c;
+  --color-terminal-suggestion-active: rgba(217,119,87,0.2);
+  /* Glow/overlay colors - increased for dark visibility */
+  --color-accent-glow: rgba(217, 119, 87, 0.15);
+  --color-accent-shadow: rgba(217, 119, 87, 0.25);
+  --color-accent-border: rgba(217, 119, 87, 0.6);
+  --color-green-glow: rgba(107, 155, 122, 0.2);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-page);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ========== Input Styles ========== */
+input, textarea {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--color-accent);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-dim);
+}
+
+/* ========== Animations ========== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* ========== Shadows ========== */
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== Selection ========== */
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
