@@ -33,7 +33,7 @@ function SortButton({ mode, current, onClick, label }: { mode: SortMode, current
 }
 
 export default function Practice() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const commands = useCommands()
   const categoryLabels = useCategoryLabels()
   const { practiceState, setPracticeState, setShowTerminalUser } = useOutletContext<ContextType>()
@@ -181,7 +181,7 @@ export default function Practice() {
           )}
           {sortMode === 'difficulty' && cat !== 'all' && (
             <h2 className={`text-xs font-medium mb-2 ${getDifficultyColor(parseInt(cat))}`}>
-              {getDifficultyLabel(parseInt(cat), t.difficulty)} 难度
+              {getDifficultyLabel(parseInt(cat), t.difficulty)}{lang === 'zh' ? ' 难度' : ''}
             </h2>
           )}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">

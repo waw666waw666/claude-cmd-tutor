@@ -82,7 +82,7 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
           {collapsed ? logoIcon : (
             <div className="flex items-center gap-2">
               {logoIcon}
-              <span className="font-bold text-sm tracking-wide truncate">CC训练营</span>
+              <span className="font-bold text-sm tracking-wide truncate">{t.common.appName}</span>
             </div>
           )}
         </div>
@@ -155,13 +155,13 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
         >
           <Play size={16} className={`shrink-0 ${autoNext ? 'fill-current' : ''}`} />
           {!collapsed && (
-            <span className="truncate">{autoNext ? '自动下一题' : '手动下一题'}</span>
+            <span className="truncate">{autoNext ? t.sidebar.autoNext : t.sidebar.manualNext}</span>
           )}
           {collapsed && (
             <div className={`absolute left-full ml-2 px-2 py-1 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text)] whitespace-nowrap z-50 ${
               hoveredBtn === 'autoNext' ? 'opacity-100' : 'opacity-0 pointer-events-none'
             } transition-opacity duration-150`}>
-              {autoNext ? '关闭自动跳转' : '开启自动跳转'}
+              {autoNext ? t.sidebar.autoNextOn : t.sidebar.autoNextOff}
             </div>
           )}
         </button>
@@ -179,20 +179,20 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
         >
           <Lightbulb size={18} className={`shrink-0 ${showHints ? 'fill-current' : ''}`} />
           {!collapsed && (
-            <span className="truncate">{showHints ? '提示模式' : '提示已关闭'}</span>
+            <span className="truncate">{showHints ? t.sidebar.hintsOn : t.sidebar.hintsOff}</span>
           )}
           {collapsed && (
             <div className={`absolute left-full ml-2 px-2 py-1 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text)] whitespace-nowrap z-50 ${
               hoveredBtn === 'hints' ? 'opacity-100' : 'opacity-0 pointer-events-none'
             } transition-opacity duration-150`}>
-              {showHints ? '关闭命令提示' : '开启命令提示'}
-              <div className="text-[var(--color-text-dim)] text-[10px] mt-0.5">输入时显示自动补全</div>
+              {showHints ? t.sidebar.hintsOnTooltip : t.sidebar.hintsOffTooltip}
+              <div className="text-[var(--color-text-dim)] text-[10px] mt-0.5">{t.sidebar.hintsSub}</div>
             </div>
           )}
         </button>
         {!collapsed && hoveredBtn === 'hints' && (
           <div className="px-3 py-1 text-[10px] text-[var(--color-text-dim)] truncate">
-            {showHints ? '关闭后将禁用命令自动补全' : '开启后输入时显示命令提示'}
+            {showHints ? t.sidebar.hintsOnDesc : t.sidebar.hintsOffDesc}
           </div>
         )}
       </div>
