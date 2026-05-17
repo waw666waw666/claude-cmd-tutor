@@ -6,32 +6,40 @@
 <h3 align="center">Claude Code Command Bootcamp</h3>
 
 <p align="center">
-  <b>互动式命令行学习平台 · Interactive CLI Learning Platform</b>
-</p>
-
-<p align="center">
   <a href="https://claudelearn.top"><img src="https://img.shields.io/badge/🌐_在线体验-Live_Demo-7c3aed?style=for-the-badge&logo=cloudflare"></a>
   <a href="https://github.com/waw666waw666/claude-cmd-tutor"><img src="https://img.shields.io/badge/GitHub-Repo-181717?style=for-the-badge&logo=github"></a>
   <br>
   <img src="https://img.shields.io/badge/Vite_8-646CFF?logo=vite&logoColor=white">
   <img src="https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black">
   <img src="https://img.shields.io/badge/TypeScript_6-3178C6?logo=typescript&logoColor=white">
-  <img src="https://img.shields.io/badge/Tailwind_v4-06B6D4?logo=tailwindcss&logoColor=white">
+  <img src="https://img.shields.io/badge/Tailwind_v4-06D6D4?logo=tailwindcss&logoColor=white">
   <img src="https://img.shields.io/badge/Cloudflare_Pages-F38020?logo=cloudflare&logoColor=white">
 </p>
 
 ---
 
-## 📖 简介 · Introduction
+<details>
+<summary><b>🇨🇳 中文 · 点击展开</b></summary>
 
-**中文** | 从零开始，循序渐进地学习 Claude Code 全部 **118 个命令**。内置交互式终端、情景挑战、成就系统，让学习像打游戏一样有趣。
+互动式 Claude Code 命令行学习平台。从零开始掌握全部 **118 个命令**，内置交互终端、情景挑战、成就系统，让 CLI 学习像打游戏一样有趣。
 
-**English** | Learn all **118 Claude Code commands** from scratch with an interactive terminal, real-world scenarios, and gamified achievements. Make CLI learning fun.
+👉 在线体验: **[claudelearn.top](https://claudelearn.top)**
+
+</details>
+
+<details open>
+<summary><b>🇬🇧 English · Click to expand</b></summary>
+
+An interactive CLI learning platform for Claude Code. Master all **118 commands** from scratch with a built-in terminal emulator, real-world scenarios, and gamified achievements.
+
+👉 Live Demo: **[claudelearn.top](https://claudelearn.top)**
+
+</details>
 
 <p align="center">
-  <img src="screenshots/commands-en.png" alt="命令大全 English UI" width="700">
+  <img src="screenshots/commands-en.png" alt="English UI - Commands page" width="700">
   <br>
-  <em>English UI — Browse all 118 commands by category</em>
+  <em>⬆ English interface — browse all commands by category ⬆</em>
 </p>
 
 ---
