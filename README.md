@@ -1,60 +1,106 @@
-# Claude Code 命令训练营
+<p align="center">
+  <img src="screenshots/home-zh.png" alt="Claude Code 命令训练营" width="700">
+</p>
 
-> 🚀 **互动式命令行学习平台** — 从零上手 Claude Code，一站式学会全部 118 个命令
+<h1 align="center">🚀 Claude Code 命令训练营</h1>
+<h3 align="center">Claude Code Command Bootcamp</h3>
 
-[![Live Site](https://img.shields.io/badge/在线体验-claudelearn.top-7c3aed?style=flat&logo=cloudflare)](https://claudelearn.top)
-![Tech Stack](https://img.shields.io/badge/Stack-Vite_8_·_React_19_·_TypeScript_6_·_Tailwind_v4-3178c6?style=flat)
+<p align="center">
+  <b>互动式命令行学习平台 · Interactive CLI Learning Platform</b>
+</p>
+
+<p align="center">
+  <a href="https://claudelearn.top"><img src="https://img.shields.io/badge/🌐_在线体验-Live_Demo-7c3aed?style=for-the-badge&logo=cloudflare"></a>
+  <a href="https://github.com/waw666waw666/claude-cmd-tutor"><img src="https://img.shields.io/badge/GitHub-Repo-181717?style=for-the-badge&logo=github"></a>
+  <br>
+  <img src="https://img.shields.io/badge/Vite_8-646CFF?logo=vite&logoColor=white">
+  <img src="https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black">
+  <img src="https://img.shields.io/badge/TypeScript_6-3178C6?logo=typescript&logoColor=white">
+  <img src="https://img.shields.io/badge/Tailwind_v4-06B6D4?logo=tailwindcss&logoColor=white">
+  <img src="https://img.shields.io/badge/Cloudflare_Pages-F38020?logo=cloudflare&logoColor=white">
+</p>
 
 ---
 
-## 为什么需要这个项目？
+## 📖 简介 · Introduction
 
-Claude Code 是强大的命令行 AI 编程助手，但 **118 个命令** 从基础会话管理到高级 agent 编排，学习曲线陡峭。官方文档只有静态列表，缺乏交互式练习环境。
+**中文** | 从零开始，循序渐进地学习 Claude Code 全部 **118 个命令**。内置交互式终端、情景挑战、成就系统，让学习像打游戏一样有趣。
 
-**CC 训练营** 解决了这个问题：
+**English** | Learn all **118 Claude Code commands** from scratch with an interactive terminal, real-world scenarios, and gamified achievements. Make CLI learning fun.
 
-- 🎮 **交互式终端** — 边学边练，真实命令行体验
-- 🧠 **情景挑战** — 10+ 真实开发场景模拟
-- 🏆 **成就系统** — 游戏化学习，7 天打卡激励
-- 📖 **双模式查阅** — 分类浏览 + 速查表格
+<p align="center">
+  <img src="screenshots/commands-en.png" alt="命令大全 English UI" width="700">
+  <br>
+  <em>English UI — Browse all 118 commands by category</em>
+</p>
 
-## 功能一览
+---
 
-| 模块 | 说明 |
-|------|------|
-| **📚 命令大全** | 118 个命令按 6 大分类展开，支持搜索、难度标记、进度追踪 |
-| **⌨️ 交互练习** | 内置模拟终端，选择命令→输入验证→即时反馈循环 |
-| **⚔️ 情景挑战** | 10+ 个贴近真实开发的场景任务，覆盖日常到高级运维 |
-| **📋 速查手册** | 全量表格速览，适合回顾和快速定位 |
-| **🏅 成就进度** | 9 个徽章成就 + 学习统计 + 连续打卡追踪 |
-| **🌐 中英文切换** | 完整中/英双语界面，一键切换，含命令数据翻译 |
+## ✨ 功能特性 · Features
 
-## 快速上手
+| 中文 | English |
+|------|---------|
+| 📚 **命令大全** — 118 命令按 6 大分类，支持搜索/难度/进度 | 📚 **Commands** — 118 commands in 6 categories, search + difficulty + progress |
+| ⌨️ **交互练习** — 内置模拟终端，即时反馈循环 | ⌨️ **Practice** — Built-in terminal emulator with instant feedback |
+| ⚔️ **情景挑战** — 11 个真实开发场景，36 个任务步骤 | ⚔️ **Scenarios** — 11 real-world challenges, 36 task steps |
+| 📋 **速查手册** — 全量表格，一键速览 | 📋 **Reference** — Full table for quick lookup |
+| 🏅 **成就系统** — 9 个徽章 + 连续打卡追踪 | 🏅 **Achievements** — 9 badges + streak tracking |
+| 🌐 **中英双语** — 一键切换，界面+数据完整翻译 | 🌐 **i18n** — One-click EN/ZH switch, UI + data fully translated |
+| 🌙 **暗色模式** — 亮/暗双主题自适应 | 🌙 **Dark Mode** — Light/dark theme support |
+
+<p align="center">
+  <img src="screenshots/practice.png" alt="交互练习 + 终端" width="700">
+  <br>
+  <em>Practice mode with interactive terminal — 练习模式与交互终端</em>
+</p>
+
+---
+
+## 🚀 快速开始 · Quick Start
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # 生产构建
+npm run dev        # http://localhost:5173
+npm run build      # Production build
 ```
 
-## 技术栈
+### 在线体验 · Live Demo
 
-| 层 | 技术 |
-|----|------|
-| 框架 | Vite 8 + React 19 + TypeScript 6 |
-| 样式 | Tailwind CSS v4 + 暗色模式变量 |
-| 路由 | React Router v7 (8 路由) |
-| 状态 | Zustand + localStorage 持久化 |
-| 动画 | Framer Motion |
-| 图标 | Lucide React |
-| 部署 | Cloudflare Pages |
+👉 **[claudelearn.top](https://claudelearn.top)** — 无需安装，打开即用 (Zero install, ready to go)
 
-## 在线体验
+---
 
-👉 **[claudelearn.top](https://claudelearn.top)** — 立即开始学习
+## 🛠️ 技术栈 · Tech Stack
 
-无需安装，浏览器打开即用，支持亮色/暗色主题。
+| Layer | Tech |
+|-------|------|
+| Framework | Vite 8 + React 19 + TypeScript 6 |
+| Styling | Tailwind CSS v4 + Dark mode CSS variables |
+| Routing | React Router v7 (8 routes) |
+| State | Zustand + localStorage persistence |
+| Animation | Framer Motion |
+| Icons | Lucide React |
+| i18n | Custom React Context (EN/ZH) |
+| Deployment | Cloudflare Pages |
 
-## License
+---
+
+## 📁 项目结构 · Structure
+
+```
+src/
+├── i18n/              # Translations (zh/en)
+├── data/              # 118 commands, 11 scenarios, 9 achievements
+├── hooks/             # Localized data hooks
+├── store/             # Zustand progress store
+├── components/        # Layout, Sidebar, Terminal
+├── pages/             # 8 pages (Home, Commands, Practice, etc.)
+├── App.tsx            # Router
+└── main.tsx           # Entry
+```
+
+---
+
+## 📜 License
 
 MIT
