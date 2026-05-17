@@ -1,12 +1,16 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Lightbulb, Code, Terminal } from 'lucide-react'
-import { commands, categoryLabels } from '../data/commands'
 import useProgress from '../store/useProgress'
+import { useI18n } from '../i18n/context'
+import { useCommands, useCategoryLabels } from '../hooks/useLocalizedData'
 import type { CommandCategory } from '../types'
 
 export default function CommandDetail() {
+  const { t } = useI18n()
   const { id } = useParams()
   const navigate = useNavigate()
+  const commands = useCommands()
+  const categoryLabels = useCategoryLabels()
   const { commandProgress, toggleCommandCompleted } = useProgress()
 
   const goPractice = () => {
@@ -17,9 +21,9 @@ export default function CommandDetail() {
   if (!cmd) {
     return (
       <div className="p-6 text-center">
-        <p className="text-[var(--color-text-dim)]">命令未找到</p>
+        <p className="text-[var(--color-text-dim)]">{t.commandDetail.notFound}</p>
         <button onClick={() => navigate('/commands')} className="text-[var(--color-accent)] text-sm mt-2">
-          返回命令列表
+          {t.commandDetail.back}
         </button>
       </div>
     )
@@ -36,7 +40,7 @@ export default function CommandDetail() {
         className="flex items-center gap-1.5 text-sm text-[var(--color-text-dim)] hover:text-[var(--color-text)] transition-colors"
       >
         <ArrowLeft size={16} />
-        返回命令列表
+        {t.commandDetail.back}
       </button>
 
       {/* Header */}
@@ -57,14 +61,14 @@ export default function CommandDetail() {
                   : 'border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)]'
               }`}
             >
-              {completed ? '✓ 已掌握' : '标记'}
+              {completed ? t.commandDetail.mastered : t.commandDetail.mark}
             </button>
             <button
               onClick={goPractice}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-xs font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
             >
               <Terminal size={14} />
-              去练习
+              {t.commandDetail.practice}
             </button>
           </div>
         </div>
@@ -76,7 +80,7 @@ export default function CommandDetail() {
       <div className="p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
         <div className="flex items-center gap-2 mb-3">
           <Terminal size={16} className="text-[var(--color-accent)]" />
-          <span className="text-sm font-medium">用法</span>
+          <span className="text-sm font-medium">{t.commandDetail.usage}</span>
         </div>
         <div className="p-3 rounded-lg bg-[var(--color-bg-base)] font-mono text-sm text-[var(--color-accent)]">
           {cmd.usage}
@@ -87,7 +91,7 @@ export default function CommandDetail() {
       <div className="p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
         <div className="flex items-center gap-2 mb-3">
           <Code size={16} className="text-[var(--color-green)]" />
-          <span className="text-sm font-medium">示例</span>
+          <span className="text-sm font-medium">{t.commandDetail.example}</span>
         </div>
         <div className="p-3 rounded-lg bg-[var(--color-bg-base)] font-mono text-sm whitespace-pre-wrap text-[var(--color-text-dim)]">
           <span className="text-[var(--color-green)]">$ {cmd.example}</span>
@@ -100,7 +104,7 @@ export default function CommandDetail() {
         <div className="p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
           <div className="flex items-center gap-2 mb-3">
             <Lightbulb size={16} className="text-[var(--color-orange)]" />
-            <span className="text-sm font-medium">小贴士</span>
+            <span className="text-sm font-medium">{t.commandDetail.tips}</span>
           </div>
           <ul className="space-y-2">
             {cmd.tips.map((tip, i) => (

@@ -1,6 +1,6 @@
 export const CATEGORY_ORDER = ['basic', 'diagnostics', 'editing', 'search', 'cli', 'opencode'] as const
 
-const DIFFICULTY_LABELS = ['入门', '进阶', '高级'] as const
+export const DIFFICULTY_KEYS = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' } as const
 
 const DIFFICULTY_COLORS: Record<number, string> = {
   1: 'text-[var(--color-difficulty-easy)]',
@@ -8,8 +8,13 @@ const DIFFICULTY_COLORS: Record<number, string> = {
   3: 'text-[var(--color-difficulty-hard)]',
 }
 
-export function getDifficultyLabel(level: number): string {
-  return DIFFICULTY_LABELS[level - 1] ?? ''
+export function getDifficultyLabel(level: number, labels?: Record<string, string>): string {
+  if (labels) {
+    const key = DIFFICULTY_KEYS[level as keyof typeof DIFFICULTY_KEYS]
+    return key ? labels[key] : ''
+  }
+  const map: Record<number, string> = { 1: '入门', 2: '进阶', 3: '高级' }
+  return map[level] ?? ''
 }
 
 export function getDifficultyColor(level: number): string {

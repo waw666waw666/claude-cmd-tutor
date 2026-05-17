@@ -1,12 +1,15 @@
 import { Trophy, TrendingUp, Target, Zap, Check, Swords, Flame } from 'lucide-react'
 import useProgress from '../store/useProgress'
-import { commands } from '../data/commands'
-import { scenarios } from '../data/scenarios'
-import { achievements } from '../data/achievements'
+import { useCommands, useScenarios, useAchievements } from '../hooks/useLocalizedData'
+import { useI18n } from '../i18n/context'
 import AchievementBadge from '../components/AchievementBadge'
 import { countCompletedCommands, calcCompletionPercent } from '../data/constants'
 
 export default function Progress() {
+  const { t } = useI18n()
+  const commands = useCommands()
+  const scenarios = useScenarios()
+  const achievements = useAchievements()
   const progress = useProgress()
   const { commandProgress, scenarioProgress, totalPracticeCount, streakDays } = progress
 
@@ -37,8 +40,8 @@ export default function Progress() {
     <div className="p-6 max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">成就与进度</h1>
-          <p className="text-sm text-[var(--color-text-dim)] mt-1">追踪你的学习旅程</p>
+          <h1 className="text-xl font-bold">{t.progress.title}</h1>
+          <p className="text-sm text-[var(--color-text-dim)] mt-1">{t.progress.desc}</p>
         </div>
       </div>
 
@@ -47,7 +50,7 @@ export default function Progress() {
         <div className="p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-2 mb-2">
             <Target size={14} className="text-[var(--color-accent)]" />
-            <span className="text-xs text-[var(--color-text-dim)]">命令掌握</span>
+            <span className="text-xs text-[var(--color-text-dim)]">{t.progress.mastered}</span>
           </div>
           <div className="text-2xl font-bold text-[var(--color-text)]">{completedCommands}</div>
           <div className="text-xs text-[var(--color-text-dimmer)] mt-1">/ {totalCommands}</div>
@@ -59,7 +62,7 @@ export default function Progress() {
         <div className="p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-2 mb-2">
             <Swords size={14} className="text-[var(--color-purple)]" />
-            <span className="text-xs text-[var(--color-text-dim)]">情景挑战</span>
+            <span className="text-xs text-[var(--color-text-dim)]">{t.progress.challenges}</span>
           </div>
           <div className="text-2xl font-bold text-[var(--color-text)]">{completedScenarios}</div>
           <div className="text-xs text-[var(--color-text-dimmer)] mt-1">/ {totalScenarios}</div>
@@ -71,23 +74,23 @@ export default function Progress() {
         <div className="p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-2 mb-2">
             <Zap size={14} className="text-[var(--color-orange)]" />
-            <span className="text-xs text-[var(--color-text-dim)]">练习次数</span>
+            <span className="text-xs text-[var(--color-text-dim)]">{t.progress.practices}</span>
           </div>
           <div className="text-2xl font-bold text-[var(--color-text)]">{totalPracticeCount}</div>
-          <div className="text-xs text-[var(--color-text-dimmer)] mt-1">累计</div>
+          <div className="text-xs text-[var(--color-text-dimmer)] mt-1">{t.progress.total}</div>
         </div>
 
         <div className="p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md">
           <div className="flex items-center gap-2 mb-2">
             <Flame size={14} className="text-[var(--color-orange)]" />
-            <span className="text-xs text-[var(--color-text-dim)]">连续学习</span>
+            <span className="text-xs text-[var(--color-text-dim)]">{t.progress.streak}</span>
           </div>
           <div className="text-2xl font-bold text-[var(--color-text)] flex items-center gap-1">
             {streakDays}
-            <span className="text-sm">天</span>
+            <span className="text-sm">{t.progress.days}</span>
           </div>
           <div className="text-xs mt-1" style={{ color: achieved.includes('streak-7') ? 'var(--color-green)' : 'var(--color-text-dim)' }}>
-            {achieved.includes('streak-7') ? '🏆 连续7天达成' : achieved.includes('streak-3') ? '🎯 距离7天还剩' + (7 - streakDays) + '天' : '🎯 距离3天还剩' + (3 - streakDays) + '天'}
+            {achieved.includes('streak-7') ? t.progress.streak7 : achieved.includes('streak-3') ? t.progress.streakRemaining.replace('{days}', '7').replace('{remain}', String(7 - streakDays)) : t.progress.streakRemaining.replace('{days}', '3').replace('{remain}', String(3 - streakDays))}
           </div>
           <div className="mt-2 h-1.5 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden">
             <div className="h-full rounded-full transition-all" style={{ width: `${streakPercent}%`, backgroundColor: achieved.includes('streak-7') ? 'var(--color-green)' : 'var(--color-orange)' }} />
@@ -99,7 +102,7 @@ export default function Progress() {
       <div>
         <h2 className="text-sm font-medium mb-3 flex items-center gap-2">
           <Trophy size={16} className="text-[var(--color-orange)]" />
-          成就徽章
+          {t.progress.achievements}
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {achievements.map((achievement) => (
@@ -116,7 +119,7 @@ export default function Progress() {
       <div>
         <h2 className="text-sm font-medium mb-3 flex items-center gap-2">
           <TrendingUp size={16} className="text-[var(--color-accent)]" />
-          详细进度
+          {t.progress.detail}
         </h2>
         <div className="space-y-1">
           {commands.map((cmd) => {
@@ -138,8 +141,8 @@ export default function Progress() {
                 <span className="font-mono text-xs flex-1">{cmd.name}</span>
                 <span className="text-xs text-[var(--color-text-dimmer)]">
                   {cp?.completed
-                    ? `已掌握${cp.lastPracticed ? ' · 练习' + cp.practiceCount + '次' : ''}`
-                    : '未学习'}
+                    ? `${t.progress.completed}${cp.lastPracticed ? t.progress.practiceCount.replace('{count}', String(cp.practiceCount)) : ''}`
+                    : t.progress.notLearned}
                 </span>
               </div>
             )

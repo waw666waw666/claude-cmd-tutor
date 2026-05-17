@@ -4,6 +4,11 @@ import type { PracticeState } from '../types'
 import { commands } from '../data/commands'
 import { scenarios } from '../data/scenarios'
 import { Lightbulb, X } from 'lucide-react'
+import { useI18n } from '../i18n/context'
+
+function replaceParams(str: string, params: Record<string, string>) {
+  return str.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? `{${k}}`)
+}
 
 interface TerminalProps {
   practiceState?: PracticeState
@@ -15,6 +20,7 @@ interface TerminalProps {
 }
 
 export default function Terminal({ practiceState, showHints = true, onToggleHints, autoNext = false, onPracticeUpdate, onClose }: TerminalProps) {
+  const { t } = useI18n()
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
@@ -66,7 +72,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       if (cmd) {
         addTerminalLine('practice', {
           type: 'system',
-          content: `▶ 练习: 输入命令 "${cmd.name}"`,
+          content: replaceParams(t.terminal.practice, { cmd: cmd.name }),
         })
         addTerminalLine('practice', {
           type: 'output',
@@ -87,7 +93,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         clearTerminal()
         addTerminalLine('scenario', {
           type: 'system',
-          content: `◆ 情景挑战: ${scenario.title}`,
+          content: replaceParams(t.terminal.scenarioStart, { title: scenario.title }),
         })
         addTerminalLine('scenario', {
           type: 'output',
@@ -97,7 +103,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         clearTerminal()
         addTerminalLine('scenario', {
           type: 'system',
-          content: `→ 继续挑战: ${scenario.title} (已完成 ${step}/${scenario.steps.length} 步)`,
+          content: replaceParams(t.terminal.scenarioContinue, { title: scenario.title, completed: String(step), total: String(scenario.steps.length) }),
         })
       }
 
@@ -105,7 +111,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       if (scenario.steps[step] && !alreadyHasQuestion) {
         addTerminalLine('scenario', {
           type: 'system',
-          content: `❓ ${scenario.steps[step].question}`,
+          content: replaceParams(t.terminal.scenarioQuestion, { question: scenario.steps[step].question }),
         })
       }
     }
@@ -125,7 +131,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
 
     addTerminalLine('input', {
       type: 'input',
-      content: `$ ${trimmed}`,
+      content: replaceParams(t.terminal.inputEcho, { cmd: trimmed }),
     })
 
     const matched = commands.find(c =>
@@ -140,7 +146,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         if (isCorrect) {
           addTerminalLine('practice', {
             type: 'success',
-            content: `✅ 正确！${targetCmd.name}: ${targetCmd.summary}`,
+            content: replaceParams(t.terminal.correct, { name: targetCmd.name, summary: targetCmd.summary }),
           })
           addTerminalLine('practice', {
             type: 'output',
@@ -156,7 +162,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
               const nextUncompleted = uncompleted.find(c => commands.indexOf(c) > currentIdx) ?? uncompleted[0]
               addTerminalLine('practice', {
                 type: 'system',
-                content: `→ 自动进入下一题: ${nextUncompleted.name}`,
+                content: replaceParams(t.terminal.autoNext, { name: nextUncompleted.name }),
               })
               setTimeout(() => {
                 clearTerminal()
@@ -166,7 +172,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
             } else {
               addTerminalLine('practice', {
                 type: 'success',
-                content: '🎉 太棒了！你已掌握全部命令！',
+                content: t.terminal.allDone,
               })
               onPracticeUpdate?.({ mode: 'normal', currentCommandId: null })
             }
@@ -177,7 +183,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         } else {
           addTerminalLine('practice', {
             type: 'error',
-            content: `❌ 不对，再试试。预期: ${targetCmd.name}`,
+            content: replaceParams(t.terminal.wrong, { expected: targetCmd.name }),
           })
         }
         return
@@ -204,20 +210,20 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
             markScenarioCompleted(scenario.id)
             addTerminalLine('scenario', {
               type: 'success',
-              content: `🎉 挑战完成！你通过了「${scenario.title}」！`,
+              content: replaceParams(t.terminal.scenarioComplete, { title: scenario.title }),
             })
             onPracticeUpdate?.({ mode: 'normal', currentScenarioId: null, currentStepIndex: 0 })
           } else {
             addTerminalLine('scenario', {
               type: 'system',
-              content: `❓ ${scenario.steps[nextIndex].question}`,
+              content: replaceParams(t.terminal.scenarioQuestion, { question: scenario.steps[nextIndex].question }),
             })
             onPracticeUpdate?.({ currentStepIndex: nextIndex })
           }
         } else {
           addTerminalLine('scenario', {
             type: 'error',
-            content: `❌ 命令不对。提示: ${step.expectedCommand}`,
+            content: replaceParams(t.terminal.scenarioWrong, { hint: step.expectedCommand }),
           })
         }
         return
@@ -232,7 +238,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
     } else {
       addTerminalLine('error', {
         type: 'error',
-        content: `未知命令: ${trimmed}。输入 /help 查看可用命令。`,
+        content: replaceParams(t.terminal.unknown, { cmd: trimmed }),
       })
     }
   }, [practiceState, onPracticeUpdate, addTerminalLine, markCommandCompleted, markScenarioStep, markScenarioCompleted, addPracticeCount])
@@ -400,10 +406,10 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
             }`} />
             <span className="text-xs font-mono text-[var(--color-text-dim)]">
               {practiceState?.mode === 'practice'
-                ? '练习模式'
+                ? t.terminal.modePractice
                 : practiceState?.mode === 'scenario'
-                ? '挑战模式'
-                : '模拟终端'}
+                ? t.terminal.modeChallenge
+                : t.terminal.modeTerminal}
             </span>
           </div>
         <div className="flex items-center gap-3">
@@ -414,7 +420,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
             onClick={clearTerminal}
             className="text-xs text-[var(--color-terminal-placeholder)] hover:text-[var(--color-text-dim)] transition-colors"
           >
-            clear
+            {t.terminal.clear}
           </button>
           {onClose && (
             <button
@@ -487,7 +493,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
                 ? 'text-[var(--color-terminal-success)] bg-[var(--color-green-glow)] hover:bg-[var(--color-green-glow)]'
                 : 'text-[var(--color-terminal-placeholder)] hover:text-[var(--color-text-dim)] hover:bg-[var(--color-bg-hover)]'
             }`}
-            title={showHints ? '关闭提示模式' : '开启提示模式'}
+            title={showHints ? t.terminal.hintsOff : t.terminal.hintsOn}
           >
             <Lightbulb size={14} className={showHints ? 'fill-current' : ''} />
           </button>
@@ -501,10 +507,10 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
           onKeyDown={handleKeyDown}
           placeholder={
             practiceState?.mode === 'practice'
-              ? '输入命令答案...'
+              ? t.terminal.placeholderPractice
               : practiceState?.mode === 'scenario'
-              ? '输入解决问题的命令...'
-              : '/help 查看更多命令...'
+              ? t.terminal.placeholderScenario
+              : t.terminal.placeholderNormal
           }
           className="flex-1 bg-transparent border-none outline-none text-sm font-mono text-[var(--color-terminal-input)] placeholder-[var(--color-terminal-placeholder)]"
           autoFocus

@@ -3,12 +3,16 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronDown, BookOpen } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import useProgress from '../store/useProgress'
-import { commands, categoryLabels } from '../data/commands'
 import { CATEGORY_ORDER, getDifficultyLabel, getDifficultyColor, buildSearchKeywords, countCompletedCommands } from '../data/constants'
+import { useI18n } from '../i18n/context'
+import { useCommands, useCategoryLabels } from '../hooks/useLocalizedData'
 import type { CommandCategory } from '../types'
 
 export default function Commands() {
+  const { t } = useI18n()
   const navigate = useNavigate()
+  const commands = useCommands()
+  const categoryLabels = useCategoryLabels()
   const { commandProgress } = useProgress()
   const [search, setSearch] = useState('')
   const [expandedCat, setExpandedCat] = useState<Set<string>>(new Set(CATEGORY_ORDER))
@@ -47,9 +51,9 @@ export default function Commands() {
     <div className="p-6 max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">命令大全</h1>
+          <h1 className="text-xl font-bold">{t.commands.title}</h1>
           <p className="text-sm text-[var(--color-text-dim)] mt-1">
-            共 {commands.length} 个命令，已掌握 {countCompletedCommands(commandProgress)} 个
+            {t.commands.desc.replace('{total}', String(commands.length)).replace('{mastered}', String(countCompletedCommands(commandProgress)))}
           </p>
         </div>
       </div>
@@ -59,7 +63,7 @@ export default function Commands() {
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="搜索命令名称、描述..."
+        placeholder={t.commands.search}
         className="w-full px-4 py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm text-[var(--color-text)] placeholder-[var(--color-text-dimmer)] outline-none focus:border-[var(--color-accent)]/50 transition-colors"
       />
 
@@ -112,7 +116,7 @@ export default function Commands() {
                             </div>
                           </div>
                           <span className={`text-xs justify-self-end ${getDifficultyColor(cmd.difficulty)}`}>
-                            {getDifficultyLabel(cmd.difficulty)}
+                            {getDifficultyLabel(cmd.difficulty, t.difficulty)}
                           </span>
                         </div>
                       )
@@ -125,7 +129,7 @@ export default function Commands() {
         ))}
         {Object.keys(grouped).length === 0 && (
           <div className="text-center py-8 text-[var(--color-text-dimmer)] text-sm">
-            没有匹配的命令
+            {t.commands.empty}
           </div>
         )}
       </div>

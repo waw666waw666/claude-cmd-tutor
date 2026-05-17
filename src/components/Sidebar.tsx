@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { BookOpen, Terminal, Swords, GraduationCap, Trophy, Home, ChevronLeft, ChevronRight, Lightbulb, Sun, Moon, Play } from 'lucide-react'
 import { useState, useRef, useEffect, type MouseEvent } from 'react'
+import { useI18n } from '../i18n/context'
 
 interface SidebarProps {
   showHints: boolean
@@ -18,15 +19,6 @@ const logoIcon = (
   </svg>
 )
 
-const links = [
-  { to: '/', icon: Home, label: '仪表盘' },
-  { to: '/commands', icon: BookOpen, label: '命令大全' },
-  { to: '/practice', icon: Terminal, label: '交互练习' },
-  { to: '/scenarios', icon: Swords, label: '情景挑战' },
-  { to: '/reference', icon: GraduationCap, label: '速查手册' },
-  { to: '/progress', icon: Trophy, label: '成就进度' },
-]
-
 const MIN_WIDTH = 64
 const MAX_WIDTH = 280
 const COLLAPSE_THRESHOLD = 100
@@ -35,6 +27,15 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
   const [width, setWidth] = useState(224)
   const [isResizing, setIsResizing] = useState(false)
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
+  const { t, lang, setLang } = useI18n()
+  const links = [
+    { to: '/', icon: Home, label: t.sidebar.dashboard },
+    { to: '/commands', icon: BookOpen, label: t.sidebar.commands },
+    { to: '/practice', icon: Terminal, label: t.sidebar.practice },
+    { to: '/scenarios', icon: Swords, label: t.sidebar.scenarios },
+    { to: '/reference', icon: GraduationCap, label: t.sidebar.reference },
+    { to: '/progress', icon: Trophy, label: t.sidebar.progress },
+  ]
   const resizeStartX = useRef(0)
   const resizeStartWidth = useRef(224)
 
@@ -86,13 +87,22 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
           )}
         </div>
         {!collapsed && (
-          <div className="absolute right-5 top-0 flex items-center h-full">
+          <div className="absolute right-5 top-0 flex items-center h-full gap-0.5">
+            <button
+              onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')}
+              onMouseEnter={() => setHoveredBtn('lang')}
+              onMouseLeave={() => setHoveredBtn(null)}
+              className="flex items-center justify-center w-8 h-8 rounded text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-colors duration-150 text-xs font-bold"
+              title={lang === 'zh' ? 'Switch to English' : '切换到中文'}
+            >
+              {lang === 'zh' ? 'EN' : '中'}
+            </button>
             <button
               onClick={onToggleTheme}
               onMouseEnter={() => setHoveredBtn('theme')}
               onMouseLeave={() => setHoveredBtn(null)}
               className="flex items-center justify-center w-8 h-8 rounded text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)] transition-colors duration-150"
-              title={isDark ? '切换到亮色模式' : '切换到暗色模式'}
+              title={isDark ? t.sidebar.lightMode : t.sidebar.darkMode}
             >
               {isDark ? <Sun size={16} /> : <Moon size={16} />}
             </button>
@@ -101,7 +111,7 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
         <button
           onClick={() => setWidth(collapsed ? 224 : MIN_WIDTH)}
           className={`absolute right-0 top-0 flex items-center justify-center w-5 h-full text-[var(--color-text-dimmer)] hover:text-[var(--color-accent)] hover:bg-[var(--color-bg-hover)] transition-colors duration-150 ${collapsed ? 'shadow-[-1px_0_3px_-1px_rgba(0,0,0,0.06)]' : ''}`}
-          title={collapsed ? '展开侧边栏' : '收起侧边栏'}
+          title={collapsed ? t.sidebar.expand : t.sidebar.collapse}
         >
           {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>

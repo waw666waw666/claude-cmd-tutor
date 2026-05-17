@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { Swords, Check, AlertTriangle } from 'lucide-react'
 import useProgress from '../store/useProgress'
-import { scenarios } from '../data/scenarios'
+import { useScenarios } from '../hooks/useLocalizedData'
+import { useI18n } from '../i18n/context'
 import { getDifficultyLabel, getDifficultyColor } from '../data/constants'
 import type { PracticeState } from '../types'
 
@@ -20,6 +21,8 @@ const DIFFICULTY_MAP: Record<string, number> = {
 }
 
 export default function Scenarios() {
+  const { t } = useI18n()
+  const scenarios = useScenarios()
   const { practiceState, setPracticeState, setShowTerminalUser } = useOutletContext<ContextType>()
   const { scenarioProgress } = useProgress()
   const [expanded, setExpanded] = useState<string | null>(null)
@@ -44,13 +47,13 @@ export default function Scenarios() {
     <div className="p-6 max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">情景挑战</h1>
+          <h1 className="text-xl font-bold">{t.scenarios.title}</h1>
           <p className="text-sm text-[var(--color-text-dim)] mt-1">
-            模拟真实场景，综合运用多个命令解决问题
+            {t.scenarios.desc}
           </p>
         </div>
         <div className="text-sm text-[var(--color-text-dim)]">
-          {totalCompleted}/{scenarios.length} 完成
+          {t.scenarios.progress.replace('{done}', String(totalCompleted)).replace('{total}', String(scenarios.length))}
         </div>
       </div>
 
@@ -62,7 +65,7 @@ export default function Scenarios() {
           const totalSteps = scenario.steps.length
           const diffLevel = DIFFICULTY_MAP[scenario.difficulty] ?? 1
           const diffColor = getDifficultyColor(diffLevel)
-          const diffLabel = getDifficultyLabel(diffLevel)
+          const diffLabel = getDifficultyLabel(diffLevel, t.difficulty)
           const isActive = practiceState.mode === 'scenario' && practiceState.currentScenarioId === scenario.id
 
           return (
@@ -127,7 +130,7 @@ export default function Scenarios() {
                   <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--color-bg-elevated)]">
                     <AlertTriangle size={14} className="text-[var(--color-orange)] mt-0.5 shrink-0" />
                     <div className="text-xs text-[var(--color-text-dim)]">
-                      <span className="font-medium text-[var(--color-text)]">提示：</span>
+                      <span className="font-medium text-[var(--color-text)]">{t.scenarios.hint}</span>
                       {scenario.hints[0]}
                     </div>
                   </div>
@@ -135,7 +138,7 @@ export default function Scenarios() {
                     onClick={(e) => { e.stopPropagation(); startScenario(scenario.id) }}
                     className="w-full py-2 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
                   >
-                    {isCompleted ? '重新挑战' : '开始挑战'}
+                    {isCompleted ? t.scenarios.restart : t.scenarios.start}
                   </button>
                 </div>
               )}
@@ -145,7 +148,7 @@ export default function Scenarios() {
                   onClick={(e) => { e.stopPropagation(); startScenario(scenario.id) }}
                   className="mt-3 w-full py-2 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
                 >
-                  ⚔️ 继续挑战
+                  {t.scenarios.continue}
                 </button>
               )}
             </div>

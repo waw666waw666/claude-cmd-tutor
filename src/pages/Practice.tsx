@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useOutletContext, useLocation } from 'react-router-dom'
 import { Shuffle, ArrowRight, Check, ArrowUpDown } from 'lucide-react'
-import { commands, categoryLabels } from '../data/commands'
+import { useCommands, useCategoryLabels } from '../hooks/useLocalizedData'
+import { useI18n } from '../i18n/context'
 import { CATEGORY_ORDER, getDifficultyLabel, getDifficultyColor, buildSearchKeywords } from '../data/constants'
 import useProgress from '../store/useProgress'
 import type { CommandCategory, PracticeState } from '../types'
@@ -32,6 +33,9 @@ function SortButton({ mode, current, onClick, label }: { mode: SortMode, current
 }
 
 export default function Practice() {
+  const { t } = useI18n()
+  const commands = useCommands()
+  const categoryLabels = useCategoryLabels()
   const { practiceState, setPracticeState, setShowTerminalUser } = useOutletContext<ContextType>()
   const { commandProgress } = useProgress()
   const [search, setSearch] = useState('')
@@ -118,9 +122,9 @@ export default function Practice() {
     <div className="p-6 max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">交互练习</h1>
+          <h1 className="text-xl font-bold">{t.practice.title}</h1>
           <p className="text-sm text-[var(--color-text-dim)] mt-1">
-            点击命令开始练习，在下方的终端中输入答案
+            {t.practice.desc}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -132,7 +136,7 @@ export default function Practice() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-xs font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
           >
             <Shuffle size={12} />
-            随机练习
+            {t.practice.random}
           </button>
         </div>
       </div>
@@ -142,11 +146,11 @@ export default function Practice() {
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <Check size={14} className="text-[var(--color-green)]" />
-            <span className="text-[var(--color-text-dim)]">已掌握: {completedCount}</span>
+            <span className="text-[var(--color-text-dim)]">{t.practice.mastered.replace('{count}', String(completedCount))}</span>
           </div>
           <div className="flex items-center gap-2">
             <ArrowRight size={14} className="text-[var(--color-accent)]" />
-            <span className="text-[var(--color-text-dim)]">待练习: {totalCommands - completedCount}</span>
+            <span className="text-[var(--color-text-dim)]">{t.practice.pending.replace('{count}', String(totalCommands - completedCount))}</span>
           </div>
         </div>
       </div>
@@ -157,13 +161,13 @@ export default function Practice() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="搜索命令..."
+          placeholder={t.practice.search}
           className="flex-1 px-4 py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm text-[var(--color-text)] placeholder-[var(--color-text-dim)] outline-none focus:border-[var(--color-accent)] transition-colors"
         />
         <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
-          <SortButton mode="category" current={sortMode} onClick={() => setSortMode('category')} label="分类" />
-          <SortButton mode="difficulty" current={sortMode} onClick={() => setSortMode('difficulty')} label="难度" />
-          <SortButton mode="name" current={sortMode} onClick={() => setSortMode('name')} label="名称" />
+          <SortButton mode="category" current={sortMode} onClick={() => setSortMode('category')} label={t.practice.sortCategory} />
+          <SortButton mode="difficulty" current={sortMode} onClick={() => setSortMode('difficulty')} label={t.practice.sortDifficulty} />
+          <SortButton mode="name" current={sortMode} onClick={() => setSortMode('name')} label={t.practice.sortName} />
         </div>
       </div>
 
@@ -177,7 +181,7 @@ export default function Practice() {
           )}
           {sortMode === 'difficulty' && cat !== 'all' && (
             <h2 className={`text-xs font-medium mb-2 ${getDifficultyColor(parseInt(cat))}`}>
-              {getDifficultyLabel(parseInt(cat))} 难度
+              {getDifficultyLabel(parseInt(cat), t.difficulty)} 难度
             </h2>
           )}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -207,7 +211,7 @@ export default function Practice() {
                         {cmd.name}
                       </span>
                       <span className={`text-xs font-medium shrink-0 ${getDifficultyColor(cmd.difficulty)}`}>
-                        {getDifficultyLabel(cmd.difficulty)}
+                        {getDifficultyLabel(cmd.difficulty, t.difficulty)}
                       </span>
                     </div>
                     <div className="text-xs text-[var(--color-text-dim)] truncate mt-0.5">
