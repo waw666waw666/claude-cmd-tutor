@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import zh from './zh'
 import en from './en'
@@ -36,10 +37,4 @@ export function useI18n() {
   const ctx = useContext(I18nContext)
   if (!ctx) throw new Error('useI18n must be used within I18nProvider')
   return ctx
-}
-
-export function useT() {
-  const ctx = useContext(I18nContext)
-  if (!ctx) throw new Error('useT must be used within I18nProvider')
-  return ctx.t
 }

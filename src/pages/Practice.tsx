@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useOutletContext, useLocation } from 'react-router-dom'
-import { Shuffle, ArrowRight, Check, ArrowUpDown } from 'lucide-react'
+import { Shuffle, ArrowRight, Check, ArrowUpDown, EyeOff, Eye } from 'lucide-react'
 import { useCommands, useCategoryLabels } from '../hooks/useLocalizedData'
 import { useI18n } from '../i18n/context'
 import { CATEGORY_ORDER, getDifficultyLabel, getDifficultyColor, buildSearchKeywords } from '../data/constants'
@@ -14,6 +14,7 @@ type ContextType = {
   setPracticeState: React.Dispatch<React.SetStateAction<PracticeState>>
   showTerminalUser: boolean
   setShowTerminalUser: (show: boolean) => void
+  recallMode: boolean
 }
 
 function SortButton({ mode, current, onClick, label }: { mode: SortMode, current: SortMode, onClick: () => void, label: string }) {
@@ -36,7 +37,7 @@ export default function Practice() {
   const { t, lang } = useI18n()
   const commands = useCommands()
   const categoryLabels = useCategoryLabels()
-  const { practiceState, setPracticeState, setShowTerminalUser } = useOutletContext<ContextType>()
+  const { practiceState, setPracticeState, setShowTerminalUser, recallMode } = useOutletContext<ContextType>()
   const { commandProgress } = useProgress()
   const [search, setSearch] = useState('')
   const [sortMode, setSortMode] = useState<SortMode>('category')
@@ -44,12 +45,13 @@ export default function Practice() {
 
   const startPractice = useCallback((commandId: string) => {
     setShowTerminalUser(true)
-    setPracticeState({
+    setPracticeState(prev => ({
+      ...prev,
       mode: 'practice',
       currentCommandId: commandId,
       currentScenarioId: null,
       currentStepIndex: 0,
-    })
+    }))
   }, [setPracticeState, setShowTerminalUser])
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function Practice() {
       })
     }
     return list
-  }, [search])
+  }, [search, commands])
 
   const sortedCommands = useMemo(() => {
     const list = [...availableCommands]
@@ -113,7 +115,7 @@ export default function Practice() {
       const random = pool[Math.floor(Math.random() * pool.length)]
       startPractice(random.id)
     }
-  }, [commandProgress, startPractice])
+  }, [commandProgress, commands, startPractice])
 
   const totalCommands = commands.length
   const completedCount = Object.values(commandProgress).filter(c => c.completed).length
@@ -133,7 +135,7 @@ export default function Practice() {
           </span>
           <button
             onClick={randomPractice}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-xs font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[var(--color-text-on-accent)] text-xs font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
           >
             <Shuffle size={12} />
             {t.practice.random}
@@ -153,6 +155,15 @@ export default function Practice() {
             <span className="text-[var(--color-text-dim)]">{t.practice.pending.replace('{count}', String(totalCommands - completedCount))}</span>
           </div>
         </div>
+      </div>
+
+      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors duration-200 ${
+        recallMode
+          ? 'bg-[var(--color-orange)]/10 border border-[var(--color-orange)]/20 text-[var(--color-orange)]'
+          : 'bg-[var(--color-green)]/10 border border-[var(--color-green)]/20 text-[var(--color-green)]'
+      }`}>
+        {recallMode ? <EyeOff size={12} /> : <Eye size={12} />}
+        {recallMode ? t.practice.recallBadge : t.practice.practiceBadge}
       </div>
 
       {/* Search and Sort */}
@@ -207,15 +218,19 @@ export default function Practice() {
                   )}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="font-mono text-xs font-medium truncate">
-                        {cmd.name}
-                      </span>
+                      {recallMode ? (
+                        <span className="text-xs font-mono text-[var(--color-orange)] tracking-widest">???</span>
+                      ) : (
+                        <span className="font-mono text-xs font-medium truncate">
+                          {cmd.name}
+                        </span>
+                      )}
                       <span className={`text-xs font-medium shrink-0 ${getDifficultyColor(cmd.difficulty)}`}>
                         {getDifficultyLabel(cmd.difficulty, t.difficulty)}
                       </span>
                     </div>
                     <div className="text-xs text-[var(--color-text-dim)] truncate mt-0.5">
-                      {cmd.summary}
+                      {recallMode ? cmd.description : cmd.summary}
                     </div>
                   </div>
                 </button>

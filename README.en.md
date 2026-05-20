@@ -36,7 +36,10 @@
 | ⚔️ **Scenarios** | 11 real-world challenges, 36 task steps |
 | 📋 **Reference** | Full table for quick command lookup |
 | 🏅 **Achievements** | 9 badges + streak tracking (3/7 day streaks) |
-| 🌐 **i18n** | One-click Chinese/English switch, UI + data fully translated |
+| 🔄 **Auto Next** | Auto-advance to next command on correct answer |
+| 🧠 **Recall Mode** | Hide command name, recall from description — strengthen memory |
+| 💡 **Hints** | Inline autocomplete suggestions lower the entry barrier |
+| 🌐 **i18n** | One-click Chinese/English switch, all data fully translated |
 | 🌙 **Dark Mode** | Light/dark theme with system preference detection |
 
 <p align="center">

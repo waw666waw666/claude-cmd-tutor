@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { BookOpen, Terminal, Swords, GraduationCap, Trophy, Home, ChevronLeft, ChevronRight, Lightbulb, Sun, Moon, Play } from 'lucide-react'
+import { BookOpen, Terminal, Swords, GraduationCap, Trophy, Home, ChevronLeft, ChevronRight, Lightbulb, Sun, Moon, Play, EyeOff } from 'lucide-react'
 import { useState, useRef, useEffect, type MouseEvent } from 'react'
 import { useI18n } from '../i18n/context'
 
@@ -10,6 +10,8 @@ interface SidebarProps {
   onToggleTheme: () => void
   autoNext: boolean
   onToggleAutoNext: () => void
+  recallMode: boolean
+  onToggleRecall: () => void
   onNavClick?: () => void
 }
 
@@ -23,7 +25,7 @@ const MIN_WIDTH = 64
 const MAX_WIDTH = 280
 const COLLAPSE_THRESHOLD = 100
 
-export default function Sidebar({ showHints, onToggleHints, isDark, onToggleTheme, autoNext, onToggleAutoNext, onNavClick }: SidebarProps) {
+export default function Sidebar({ showHints, onToggleHints, isDark, onToggleTheme, autoNext, onToggleAutoNext, recallMode, onToggleRecall, onNavClick }: SidebarProps) {
   const [width, setWidth] = useState(224)
   const [isResizing, setIsResizing] = useState(false)
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
@@ -166,6 +168,31 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
           )}
         </button>
         <button
+          onClick={onToggleRecall}
+          onMouseEnter={() => setHoveredBtn('recall')}
+          onMouseLeave={() => setHoveredBtn(null)}
+          className={`group relative flex items-center gap-3 w-full px-3 py-2 text-sm transition-all duration-150 min-h-[36px] ${
+            collapsed ? 'justify-center' : ''
+          } ${
+            recallMode
+              ? 'text-[var(--color-highlight)] bg-[var(--color-highlight)]/10'
+              : 'text-[var(--color-text-dim)] hover:text-[var(--color-highlight)] hover:bg-[var(--color-highlight)]/5'
+          }`}
+        >
+          <EyeOff size={16} className="shrink-0" />
+          {!collapsed && (
+            <span className="truncate">{recallMode ? t.sidebar.recallOn : t.sidebar.recallOff}</span>
+          )}
+          {collapsed && (
+            <div className={`absolute left-full ml-2 px-2 py-1 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-xs text-[var(--color-text)] whitespace-nowrap z-50 ${
+              hoveredBtn === 'recall' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            } transition-opacity duration-150`}>
+              {recallMode ? t.sidebar.recallOnTooltip : t.sidebar.recallOffTooltip}
+              <div className="text-[var(--color-text-dim)] text-xs mt-0.5">{t.sidebar.recallSub}</div>
+            </div>
+          )}
+        </button>
+        <button
           onClick={onToggleHints}
           onMouseEnter={() => setHoveredBtn('hints')}
           onMouseLeave={() => setHoveredBtn(null)}
@@ -186,15 +213,10 @@ export default function Sidebar({ showHints, onToggleHints, isDark, onToggleThem
               hoveredBtn === 'hints' ? 'opacity-100' : 'opacity-0 pointer-events-none'
             } transition-opacity duration-150`}>
               {showHints ? t.sidebar.hintsOnTooltip : t.sidebar.hintsOffTooltip}
-              <div className="text-[var(--color-text-dim)] text-[10px] mt-0.5">{t.sidebar.hintsSub}</div>
+              <div className="text-[var(--color-text-dim)] text-xs mt-0.5">{t.sidebar.hintsSub}</div>
             </div>
           )}
         </button>
-        {!collapsed && hoveredBtn === 'hints' && (
-          <div className="px-3 py-1 text-[10px] text-[var(--color-text-dim)] truncate">
-            {showHints ? t.sidebar.hintsOnDesc : t.sidebar.hintsOffDesc}
-          </div>
-        )}
       </div>
     </aside>
   )

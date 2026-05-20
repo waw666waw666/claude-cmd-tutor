@@ -302,7 +302,7 @@ export const scenarios: Scenario[] = [
         id: 'cc-3',
         question: 'Step 3: Want to lower output quality to speed up and save costs. Which command should you use?',
         expectedCommand: '/effort',
-        feedback: '✓ /effort low reduces the effort level, resulting in faster responses and fewer token消耗.',
+        feedback: '✓ /effort low reduces the effort level, resulting in faster responses and fewer tokens consumed.',
       },
       {
         id: 'cc-4',

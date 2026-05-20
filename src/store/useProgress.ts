@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { CommandProgress, ScenarioProgress, TerminalLine } from '../types'
+import { getDaysBetweenLocalDateKeys, getLocalDateKey } from '../utils/date'
+import { createDefaultPersistedProgressState, migratePersistedProgressState } from '../utils/progressPersistence'
 
 let lineIdCounter = 0
 
@@ -26,24 +28,16 @@ interface AppState {
 const useProgress = create<AppState>()(
   persist(
     (set, get) => ({
-      commandProgress: {},
-      scenarioProgress: {},
-      totalPracticeCount: 0,
-      lastActiveDate: new Date().toISOString().split('T')[0],
-      streakDays: 1,
-      achievements: [],
+      ...createDefaultPersistedProgressState(),
       terminalLines: [],
 
       updateStreak: () => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = getLocalDateKey()
         const { lastActiveDate, streakDays } = get()
         
         if (lastActiveDate === today) return
         
-        const lastDate = new Date(lastActiveDate)
-        const todayDate = new Date(today)
-        const diffTime = todayDate.getTime() - lastDate.getTime()
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+        const diffDays = getDaysBetweenLocalDateKeys(lastActiveDate, today)
         
         if (diffDays === 1) {
           set({ streakDays: streakDays + 1, lastActiveDate: today })
@@ -122,6 +116,8 @@ const useProgress = create<AppState>()(
     }),
     {
       name: 'claude-cmd-tutor-progress',
+      version: 1,
+      migrate: (persistedState) => migratePersistedProgressState(persistedState),
       partialize: (state) => ({
         commandProgress: state.commandProgress,
         scenarioProgress: state.scenarioProgress,

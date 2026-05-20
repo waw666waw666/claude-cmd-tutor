@@ -65,7 +65,7 @@ export default function CommandDetail() {
             </button>
             <button
               onClick={goPractice}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-xs font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent)] text-[var(--color-text-on-accent)] text-xs font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
             >
               <Terminal size={14} />
               {t.commandDetail.practice}
@@ -82,7 +82,7 @@ export default function CommandDetail() {
           <Terminal size={16} className="text-[var(--color-accent)]" />
           <span className="text-sm font-medium">{t.commandDetail.usage}</span>
         </div>
-        <div className="p-3 rounded-lg bg-[var(--color-bg-base)] font-mono text-sm text-[var(--color-accent)]">
+        <div className="p-3 rounded-lg bg-[var(--color-bg-elevated)] font-mono text-sm text-[var(--color-accent)]">
           {cmd.usage}
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function CommandDetail() {
           <Code size={16} className="text-[var(--color-green)]" />
           <span className="text-sm font-medium">{t.commandDetail.example}</span>
         </div>
-        <div className="p-3 rounded-lg bg-[var(--color-bg-base)] font-mono text-sm whitespace-pre-wrap text-[var(--color-text-dim)]">
+        <div className="p-3 rounded-lg bg-[var(--color-bg-elevated)] font-mono text-sm whitespace-pre-wrap text-[var(--color-text-dim)]">
           <span className="text-[var(--color-green)]">$ {cmd.example}</span>
           {'\n'}{cmd.exampleOutput}
         </div>

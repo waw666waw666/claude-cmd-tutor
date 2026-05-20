@@ -11,7 +11,7 @@ export default function NotFound() {
       <p className="text-[var(--color-text-dim)]">{t.notFound.message}</p>
       <button
         onClick={() => navigate('/')}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
+        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-accent)] text-[var(--color-text-on-accent)] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
       >
         <Home size={16} />
         {t.notFound.back}

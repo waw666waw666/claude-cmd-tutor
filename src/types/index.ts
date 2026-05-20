@@ -14,7 +14,7 @@ export interface Command {
   difficulty: 1 | 2 | 3
 }
 
-export type ScenarioDifficulty = 'easy' | 'medium' | 'hard'
+type ScenarioDifficulty = 'easy' | 'medium' | 'hard'
 
 export interface Scenario {
   id: string
@@ -26,7 +26,7 @@ export interface Scenario {
   hints: string[]
 }
 
-export interface ScenarioStep {
+interface ScenarioStep {
   id: string
   question: string
   expectedCommand: string
@@ -68,11 +68,12 @@ export interface TerminalLine {
   timestamp: number
 }
 
-export type ViewMode = 'normal' | 'practice' | 'scenario'
+type ViewMode = 'normal' | 'practice' | 'scenario'
 
 export interface PracticeState {
   mode: ViewMode
   currentCommandId: string | null
   currentScenarioId: string | null
   currentStepIndex: number
+  recallMode: boolean
 }

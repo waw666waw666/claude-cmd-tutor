@@ -1,6 +1,6 @@
 export const CATEGORY_ORDER = ['basic', 'diagnostics', 'editing', 'search', 'cli', 'opencode'] as const
 
-export const DIFFICULTY_KEYS = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' } as const
+const DIFFICULTY_KEYS = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' } as const
 
 const DIFFICULTY_COLORS: Record<number, string> = {
   1: 'text-[var(--color-difficulty-easy)]',

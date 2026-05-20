@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useMemo, useCallback, type KeyboardEvent, type MouseEvent } from 'react'
 import useProgress from '../store/useProgress'
 import type { PracticeState } from '../types'
-import { commands } from '../data/commands'
-import { scenarios } from '../data/scenarios'
-import { Lightbulb, X } from 'lucide-react'
+import { Lightbulb, X, EyeOff, Eye } from 'lucide-react'
 import { useI18n } from '../i18n/context'
+import { useCommands, useScenarios } from '../hooks/useLocalizedData'
+import { findMatchingCommand, isScenarioCommandCorrect } from '../utils/terminal'
 
 function replaceParams(str: string, params: Record<string, string>) {
   return str.replace(/\{(\w+)\}/g, (_, k) => params[k] ?? `{${k}}`)
@@ -15,12 +15,17 @@ interface TerminalProps {
   showHints?: boolean
   onToggleHints?: () => void
   autoNext?: boolean
+  recallMode?: boolean
+  onToggleRecall?: () => void
   onPracticeUpdate?: (update: Partial<PracticeState>) => void
   onClose?: () => void
 }
 
-export default function Terminal({ practiceState, showHints = true, onToggleHints, autoNext = false, onPracticeUpdate, onClose }: TerminalProps) {
+export default function Terminal({ practiceState, showHints = true, onToggleHints, autoNext = false, recallMode = false, onToggleRecall, onPracticeUpdate, onClose }: TerminalProps) {
   const { t } = useI18n()
+  const terminalText = t.terminal
+  const localizedCommands = useCommands()
+  const localizedScenarios = useScenarios()
   const [input, setInput] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
@@ -48,9 +53,9 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
   const suggestions = useMemo(() => {
     if (!showHints || !input.startsWith('/')) return []
     const q = input.toLowerCase()
-    const all = commands.map(c => c.name)
+    const all = localizedCommands.map(c => c.name)
     return all.filter(c => c.toLowerCase().includes(q))
-  }, [input, showHints])
+  }, [input, showHints, localizedCommands])
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -68,11 +73,13 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
   useEffect(() => {
     if (practiceState?.mode === 'practice' && practiceState.currentCommandId) {
       clearTerminal()
-      const cmd = commands.find(c => c.id === practiceState.currentCommandId)
+      const cmd = localizedCommands.find(c => c.id === practiceState.currentCommandId)
       if (cmd) {
         addTerminalLine('practice', {
           type: 'system',
-          content: replaceParams(t.terminal.practice, { cmd: cmd.name }),
+          content: recallMode
+            ? replaceParams(terminalText.recall, {})
+            : replaceParams(terminalText.practice, { cmd: cmd.name }),
         })
         addTerminalLine('practice', {
           type: 'output',
@@ -80,12 +87,11 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         })
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [practiceState?.currentCommandId, practiceState?.mode])
+  }, [practiceState?.currentCommandId, practiceState?.mode, recallMode, clearTerminal, addTerminalLine, localizedCommands, terminalText])
 
   useEffect(() => {
     if (practiceState?.mode === 'scenario' && practiceState.currentScenarioId) {
-      const scenario = scenarios.find(s => s.id === practiceState.currentScenarioId)
+      const scenario = localizedScenarios.find(s => s.id === practiceState.currentScenarioId)
       if (!scenario) return
       const step = practiceState.currentStepIndex
 
@@ -93,7 +99,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         clearTerminal()
         addTerminalLine('scenario', {
           type: 'system',
-          content: replaceParams(t.terminal.scenarioStart, { title: scenario.title }),
+          content: replaceParams(terminalText.scenarioStart, { title: scenario.title }),
         })
         addTerminalLine('scenario', {
           type: 'output',
@@ -103,7 +109,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         clearTerminal()
         addTerminalLine('scenario', {
           type: 'system',
-          content: replaceParams(t.terminal.scenarioContinue, { title: scenario.title, completed: String(step), total: String(scenario.steps.length) }),
+          content: replaceParams(terminalText.scenarioContinue, { title: scenario.title, step: String(step), total: String(scenario.steps.length) }),
         })
       }
 
@@ -111,12 +117,11 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       if (scenario.steps[step] && !alreadyHasQuestion) {
         addTerminalLine('scenario', {
           type: 'system',
-          content: replaceParams(t.terminal.scenarioQuestion, { question: scenario.steps[step].question }),
+          content: replaceParams(terminalText.scenarioQuestion, { question: scenario.steps[step].question }),
         })
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [practiceState?.currentScenarioId, practiceState?.mode, practiceState?.currentStepIndex])
+  }, [practiceState?.currentScenarioId, practiceState?.mode, practiceState?.currentStepIndex, localizedScenarios, terminalLines, clearTerminal, addTerminalLine, terminalText])
 
   useEffect(() => {
     if (showHints && suggestions.length > 0 && suggestionRef.current) {
@@ -131,22 +136,19 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
 
     addTerminalLine('input', {
       type: 'input',
-      content: replaceParams(t.terminal.inputEcho, { cmd: trimmed }),
+      content: replaceParams(terminalText.inputEcho, { cmd: trimmed }),
     })
 
-    const matched = commands.find(c =>
-      trimmed.toLowerCase() === c.name.toLowerCase() ||
-      c.aliases?.some(a => trimmed.toLowerCase() === a.toLowerCase())
-    )
+    const matched = findMatchingCommand(trimmed, localizedCommands)
 
     if (practiceState?.mode === 'practice' && practiceState.currentCommandId) {
-      const targetCmd = commands.find(c => c.id === practiceState.currentCommandId)
+      const targetCmd = localizedCommands.find(c => c.id === practiceState.currentCommandId)
       if (targetCmd) {
         const isCorrect = trimmed.toLowerCase() === targetCmd.name.toLowerCase()
         if (isCorrect) {
           addTerminalLine('practice', {
             type: 'success',
-            content: replaceParams(t.terminal.correct, { name: targetCmd.name, summary: targetCmd.summary }),
+            content: replaceParams(terminalText.correct, { name: targetCmd.name, summary: targetCmd.summary }),
           })
           addTerminalLine('practice', {
             type: 'output',
@@ -156,13 +158,13 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
           addPracticeCount()
 
           if (autoNext && practiceState?.mode === 'practice') {
-            const uncompleted = commands.filter(c => !useProgress.getState().commandProgress[c.id]?.completed)
+            const uncompleted = localizedCommands.filter(c => !useProgress.getState().commandProgress[c.id]?.completed)
             if (uncompleted.length > 0) {
-              const currentIdx = commands.findIndex(c => c.id === targetCmd.id)
-              const nextUncompleted = uncompleted.find(c => commands.indexOf(c) > currentIdx) ?? uncompleted[0]
+              const currentIdx = localizedCommands.findIndex(c => c.id === targetCmd.id)
+              const nextUncompleted = uncompleted.find(c => localizedCommands.indexOf(c) > currentIdx) ?? uncompleted[0]
               addTerminalLine('practice', {
                 type: 'system',
-                content: replaceParams(t.terminal.autoNext, { name: nextUncompleted.name }),
+                content: replaceParams(terminalText.autoNext, { name: nextUncompleted.name }),
               })
               setTimeout(() => {
                 clearTerminal()
@@ -172,7 +174,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
             } else {
               addTerminalLine('practice', {
                 type: 'success',
-                content: t.terminal.allDone,
+                content: terminalText.allDone,
               })
               onPracticeUpdate?.({ mode: 'normal', currentCommandId: null })
             }
@@ -183,7 +185,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
         } else {
           addTerminalLine('practice', {
             type: 'error',
-            content: replaceParams(t.terminal.wrong, { expected: targetCmd.name }),
+            content: replaceParams(terminalText.wrong, { expected: targetCmd.name }),
           })
         }
         return
@@ -191,11 +193,10 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
     }
 
     if (practiceState?.mode === 'scenario' && practiceState.currentScenarioId) {
-      const scenario = scenarios.find(s => s.id === practiceState.currentScenarioId)
+      const scenario = localizedScenarios.find(s => s.id === practiceState.currentScenarioId)
       const step = scenario?.steps[practiceState.currentStepIndex]
       if (scenario && step) {
-        const normalize = (s: string) => s.toLowerCase().replace(/--\w+/g, '').trim()
-        const isCorrect = normalize(trimmed) === normalize(step.expectedCommand)
+        const isCorrect = isScenarioCommandCorrect(trimmed, step.expectedCommand)
 
         if (isCorrect) {
           addTerminalLine('scenario', {
@@ -210,20 +211,20 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
             markScenarioCompleted(scenario.id)
             addTerminalLine('scenario', {
               type: 'success',
-              content: replaceParams(t.terminal.scenarioComplete, { title: scenario.title }),
+              content: replaceParams(terminalText.scenarioComplete, { title: scenario.title }),
             })
             onPracticeUpdate?.({ mode: 'normal', currentScenarioId: null, currentStepIndex: 0 })
           } else {
             addTerminalLine('scenario', {
               type: 'system',
-              content: replaceParams(t.terminal.scenarioQuestion, { question: scenario.steps[nextIndex].question }),
+              content: replaceParams(terminalText.scenarioQuestion, { question: scenario.steps[nextIndex].question }),
             })
             onPracticeUpdate?.({ currentStepIndex: nextIndex })
           }
         } else {
           addTerminalLine('scenario', {
             type: 'error',
-            content: replaceParams(t.terminal.scenarioWrong, { hint: step.expectedCommand }),
+            content: replaceParams(terminalText.scenarioWrong, { hint: step.expectedCommand }),
           })
         }
         return
@@ -238,10 +239,10 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
     } else {
       addTerminalLine('error', {
         type: 'error',
-        content: replaceParams(t.terminal.unknown, { cmd: trimmed }),
+        content: replaceParams(terminalText.unknown, { cmd: trimmed }),
       })
     }
-  }, [practiceState, onPracticeUpdate, addTerminalLine, markCommandCompleted, markScenarioStep, markScenarioCompleted, addPracticeCount])
+  }, [practiceState, autoNext, onPracticeUpdate, addTerminalLine, markCommandCompleted, markScenarioStep, markScenarioCompleted, addPracticeCount, clearTerminal, localizedCommands, localizedScenarios, terminalText])
 
   const selectSuggestion = (name: string) => {
     setInput(name + ' ')
@@ -382,7 +383,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       document.removeEventListener('touchmove', handleTouchMove as unknown as EventListener)
       document.removeEventListener('touchend', handleEnd)
     }
-  }, [isResizing])
+  }, [isResizing, onClose])
 
   return (
     <div
@@ -418,6 +419,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
           </span>
           <button
             onClick={clearTerminal}
+            aria-label={t.terminal.clear}
             className="text-xs text-[var(--color-terminal-placeholder)] hover:text-[var(--color-text-dim)] transition-colors"
           >
             {t.terminal.clear}
@@ -425,6 +427,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
           {onClose && (
             <button
               onClick={onClose}
+              aria-label="Close terminal"
               className="flex items-center justify-center w-6 h-6 rounded text-[var(--color-terminal-error)] hover:opacity-80 transition-opacity"
             >
               <X size={14} />
@@ -435,6 +438,7 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
 
       <div
         ref={scrollRef}
+        aria-live="polite"
         className="overflow-y-auto p-3 font-mono text-sm space-y-1 terminal-text"
         style={{ height: terminalHeight - 90 }}
         onClick={() => inputRef.current?.focus()}
@@ -485,9 +489,24 @@ export default function Terminal({ practiceState, showHints = true, onToggleHint
       )}
 
       <div className="flex items-center gap-2 px-3 py-2.5 border-t border-[var(--color-terminal-border)] terminal-text">
+        {onToggleRecall && (
+          <button
+            onClick={onToggleRecall}
+            aria-label={recallMode ? t.sidebar.recallOffTooltip : t.sidebar.recallOnTooltip}
+            className={`p-1.5 rounded-md transition-colors ${
+              recallMode
+                ? 'text-[var(--color-highlight)] bg-[var(--color-highlight)]/10'
+                : 'text-[var(--color-terminal-placeholder)] hover:text-[var(--color-text-dim)] hover:bg-[var(--color-bg-hover)]'
+            }`}
+            title={recallMode ? t.sidebar.recallOffTooltip : t.sidebar.recallOnTooltip}
+          >
+            {recallMode ? <EyeOff size={14} /> : <Eye size={14} />}
+          </button>
+        )}
         {onToggleHints ? (
           <button
             onClick={onToggleHints}
+            aria-label={showHints ? t.terminal.hintsOff : t.terminal.hintsOn}
             className={`p-1.5 rounded-md transition-colors ${
               showHints
                 ? 'text-[var(--color-terminal-success)] bg-[var(--color-green-glow)] hover:bg-[var(--color-green-glow)]'

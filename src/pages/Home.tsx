@@ -1,43 +1,64 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BookOpen, Terminal, Swords, GraduationCap, ArrowRight, Zap, TrendingUp, Flame } from 'lucide-react'
+import { BookOpen, Terminal, Swords, GraduationCap, ArrowRight, Zap, TrendingUp, Flame, ChevronRight, Trophy } from 'lucide-react'
 import useProgress from '../store/useProgress'
-import { countCompletedCommands, calcCompletionPercent } from '../data/constants'
+import { countCompletedCommands, calcCompletionPercent, getDifficultyLabel, getDifficultyColor } from '../data/constants'
 import { useI18n } from '../i18n/context'
-import { useCommands, useScenarios } from '../hooks/useLocalizedData'
+import { useCommands, useAchievements } from '../hooks/useLocalizedData'
+import { getLocalDateKey } from '../utils/date'
+import { countUnlockedAchievements } from '../utils/achievements'
+
+type PathLevel = 'beginner' | 'intermediate' | 'advanced'
+
+const learningPaths: Record<PathLevel, string[]> = {
+  beginner: ['help', 'clear', 'exit', 'model', 'compact'],
+  intermediate: ['doctor', 'cost', 'review', 'search', 'claude-continue'],
+  advanced: ['mcp', 'agents', 'background', 'plan', 'claude-pipe'],
+}
 
 export default function Home() {
   const { t } = useI18n()
   const navigate = useNavigate()
   const commands = useCommands()
-  const scenarios = useScenarios()
-  const { commandProgress, totalPracticeCount, streakDays, lastActiveDate } = useProgress()
+  const achievements = useAchievements()
+  const { commandProgress, scenarioProgress, achievements: earnedAchievements, totalPracticeCount, streakDays, lastActiveDate } = useProgress()
+  const [pathLevel, setPathLevel] = useState<PathLevel>('beginner')
 
   const quickLinks = [
     { to: '/commands', icon: BookOpen, label: t.home.commands, desc: t.home.commandsDesc, color: 'border-l-[var(--color-accent)]' },
     { to: '/practice', icon: Terminal, label: t.home.practice, desc: t.home.practiceDesc, color: 'border-l-[var(--color-green)]' },
     { to: '/scenarios', icon: Swords, label: t.home.scenarios, desc: t.home.scenariosDesc, color: 'border-l-[var(--color-orange)]' },
-    { to: '/reference', icon: GraduationCap, label: t.home.reference, desc: t.home.referenceDesc, color: 'border-l-[var(--color-purple)]' },
+    { to: '/reference', icon: GraduationCap, label: t.home.reference, desc: t.home.referenceDesc, color: 'border-l-[var(--color-highlight)]' },
   ]
 
   const completedCount = countCompletedCommands(commandProgress)
   const totalCount = commands.length
   const progressPercent = calcCompletionPercent(commandProgress, totalCount)
-  
-  const today = new Date().toISOString().split('T')[0]
+
+  const today = getLocalDateKey()
   const isActiveToday = lastActiveDate === today
+
+  const achievedCount = countUnlockedAchievements(achievements, {
+    commandProgress,
+    scenarioProgress,
+    achievements: earnedAchievements,
+    totalPracticeCount,
+    lastActiveDate,
+    streakDays,
+  })
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-8 animate-fade-in">
       {/* Hero */}
-      <div className="text-center py-8">
+      <div className="text-center py-10">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-xs font-medium mb-4">
           <Zap size={12} />
           {t.home.badge}
         </div>
-        <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2">
+        <h1 className="text-4xl sm:text-5xl font-bold text-[var(--color-text)] mb-3 tracking-tight">
           {t.home.title}
         </h1>
-        <p className="text-[var(--color-text-dim)] max-w-lg mx-auto">
+        <p className="text-sm sm:text-base text-[var(--color-text-dim)] max-w-2xl mx-auto leading-relaxed">
           {t.home.desc}
         </p>
       </div>
@@ -53,8 +74,11 @@ export default function Home() {
           <div className="text-xs text-[var(--color-text-dimmer)] mt-1">{t.home.practices}</div>
         </div>
         <div className="p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md hover:scale-[1.02]">
-          <div className="text-2xl font-bold text-[var(--color-orange)]">{scenarios.length}</div>
-          <div className="text-xs text-[var(--color-text-dimmer)] mt-1">{t.home.challenges}</div>
+          <div className="flex items-center gap-1.5">
+            <Trophy size={16} className="text-[var(--color-highlight)]" />
+            <div className="text-2xl font-bold text-[var(--color-highlight)]">{achievedCount}</div>
+          </div>
+          <div className="text-xs text-[var(--color-text-dimmer)] mt-1">/ {achievements.length} {t.home.achievements}</div>
         </div>
         <div className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${isActiveToday ? 'bg-[var(--color-accent)]/5 border-[var(--color-accent)]/20' : 'bg-[var(--color-bg-card)] border-[var(--color-border)]'}`}>
           <div className="flex items-center gap-1.5">
@@ -101,6 +125,61 @@ export default function Home() {
               +{commands.length - 6} more
             </span>
           )}
+        </div>
+      </div>
+
+      {/* Learning Paths */}
+      <div className="p-5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] transition-all duration-200 hover:shadow-md">
+        <div className="flex items-center gap-2 mb-4">
+          <GraduationCap size={16} className="text-[var(--color-accent)]" />
+          <span className="text-sm font-medium">{t.learningPaths.title}</span>
+        </div>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {(['beginner', 'intermediate', 'advanced'] as PathLevel[]).map((level) => {
+            const colors = {
+              beginner: { active: 'bg-[var(--color-green)]/10 text-[var(--color-green)] border-[var(--color-green)]/30', inactive: '' },
+              intermediate: { active: 'bg-[var(--color-orange)]/10 text-[var(--color-orange)] border-[var(--color-orange)]/30', inactive: '' },
+              advanced: { active: 'bg-[var(--color-red)]/10 text-[var(--color-red)] border-[var(--color-red)]/30', inactive: '' },
+            }
+            return (
+              <button
+                key={level}
+                onClick={() => setPathLevel(level)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                  pathLevel === level ? colors[level].active : 'border-[var(--color-border)] text-[var(--color-text-dim)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-hover)]'
+                }`}
+              >
+                {t.learningPaths[level]}
+              </button>
+            )
+          })}
+        </div>
+        <div className="space-y-2">
+          {learningPaths[pathLevel].map((id, i) => {
+            const cmd = commands.find(c => c.id === id)
+            if (!cmd) return null
+            return (
+              <button
+                key={cmd.id}
+                onClick={() => navigate(`/commands/${cmd.id}`)}
+                className="w-full flex items-center gap-3 p-2.5 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-[var(--color-bg-hover)] transition-colors text-left group"
+              >
+                <span className="w-5 h-5 rounded-full bg-[var(--color-accent)]/10 text-[var(--color-accent)] text-xs font-bold flex items-center justify-center shrink-0">
+                  {i + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-medium">{cmd.name}</span>
+                    <span className={`text-xs ${getDifficultyColor(cmd.difficulty)}`}>
+                      {getDifficultyLabel(cmd.difficulty, t.difficulty)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-[var(--color-text-dim)] truncate">{cmd.summary}</div>
+                </div>
+                <ChevronRight size={14} className="text-[var(--color-text-dimmer)] group-hover:translate-x-0.5 transition-transform shrink-0" />
+              </button>
+            )
+          })}
         </div>
       </div>
 

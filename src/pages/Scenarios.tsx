@@ -35,12 +35,13 @@ export default function Scenarios() {
     const steps = scenarios.find(s => s.id === id)?.steps ?? []
     const completedCount = progress?.completedSteps.length ?? 0
     const startIndex = completedCount >= steps.length ? 0 : completedCount
-    setPracticeState({
+    setPracticeState(prev => ({
+      ...prev,
       mode: 'scenario',
       currentCommandId: null,
       currentScenarioId: id,
       currentStepIndex: startIndex,
-    })
+    }))
   }
 
   return (
@@ -73,7 +74,7 @@ export default function Scenarios() {
               key={scenario.id}
               className={`rounded-xl border transition-all duration-200 cursor-pointer p-5 ${
                 isActive
-                  ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/5 shadow-[0_0_12px_rgba(201,100,66,0.08)]'
+                  ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/5 shadow-[0_0_12px_var(--color-accent-glow)]'
                   : isCompleted
                   ? 'border-[var(--color-green)]/20 bg-[var(--color-green)]/5'
                   : 'border-[var(--color-border)] bg-[var(--color-bg-card)] hover:shadow-md hover:scale-[1.01]'
@@ -136,7 +137,7 @@ export default function Scenarios() {
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); startScenario(scenario.id) }}
-                    className="w-full py-2 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
+                    className="w-full py-2 rounded-lg bg-[var(--color-accent)] text-[var(--color-text-on-accent)] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
                   >
                     {isCompleted ? t.scenarios.restart : t.scenarios.start}
                   </button>
@@ -146,7 +147,7 @@ export default function Scenarios() {
               {isActive && (
                 <button
                   onClick={(e) => { e.stopPropagation(); startScenario(scenario.id) }}
-                  className="mt-3 w-full py-2 rounded-lg bg-[var(--color-accent)] text-[#faf9f5] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
+                  className="mt-3 w-full py-2 rounded-lg bg-[var(--color-accent)] text-[var(--color-text-on-accent)] text-sm font-medium hover:bg-[var(--color-accent-dim)] transition-colors"
                 >
                   {t.scenarios.continue}
                 </button>
