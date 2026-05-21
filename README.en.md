@@ -31,27 +31,55 @@
 
 | Feature | Description |
 |---------|-------------|
-| 📚 **Commands** | 118 commands in 6 categories with search, difficulty tags & progress |
-| ⌨️ **Practice** | Built-in terminal emulator with instant feedback loop |
+| 📚 **Commands** | 118 commands in 6 categories, search, difficulty tags, progress |
+| ⌨️ **Practice** | Built-in terminal emulator: select → type → verify |
 | ⚔️ **Scenarios** | 11 real-world challenges, 36 task steps |
-| 📋 **Reference** | Full table for quick command lookup |
-| 🏅 **Achievements** | 9 badges + streak tracking (3/7 day streaks) |
-| 🔄 **Auto Next** | Auto-advance to next command on correct answer |
-| 🧠 **Recall Mode** | Hide command name, recall from description — strengthen memory |
-| 💡 **Hints** | Inline autocomplete suggestions lower the entry barrier |
-| 🌐 **i18n** | One-click Chinese/English switch, all data fully translated |
-| 🌙 **Dark Mode** | Light/dark theme with system preference detection |
+| 📋 **Reference** | Full table with hover tooltips for quick lookup |
+| 🏅 **Achievements** | 9 badges + stats + streak tracking (3/7 days) |
+| 🔄 **Auto Next** | Auto-advance on correct answer |
+| 🧠 **Recall Mode** | Hide command name, recall from description |
+| 💡 **Hints** | Inline autocomplete suggestions |
+| 🌐 **i18n** | One-click Chinese/English switch, all data translated |
+| 🌙 **Dark Mode** | Light/dark theme with system preference |
+
+---
+
+## 📸 Screenshots
 
 <p align="center">
-  <img src="screenshots/commands-en.png" alt="Browse all commands in English" width="700">
+  <img src="screenshots/commands-zh.png" alt="Commands page" width="700">
   <br>
   <em>Command encyclopedia — browse, search, and track progress</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/practice.png" alt="Interactive practice with terminal" width="700">
+  <img src="screenshots/learning.png" alt="Learning mode" width="700">
   <br>
-  <em>Practice mode — type commands in the built-in terminal</em>
+  <em>Learning mode — view command details, syntax, and examples</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/practice.png" alt="Practice mode" width="700">
+  <br>
+  <em>Practice mode — recall commands by description, type to verify</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/scenarios.png" alt="Scenarios" width="700">
+  <br>
+  <em>Scenarios — solve real-world problems step by step</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/progress.png" alt="Progress and achievements" width="700">
+  <br>
+  <em>Achievements — track learning progress and daily streaks</em>
+</p>
+
+<p align="center">
+  <img src="screenshots/reference.png" alt="Reference guide" width="700">
+  <br>
+  <em>Reference — command relations with hover tooltips</em>
 </p>
 
 ---
@@ -97,10 +125,10 @@ src/
 
 ---
 
-<p align="center">
-  <a href="README.md"><b>🇨🇳 查看中文版本</b></a>
-</p>
-
 ## License
 
 MIT
+
+<p align="center">
+  <a href="README.md"><b>🇨🇳 查看中文版本</b></a>
+</p>
